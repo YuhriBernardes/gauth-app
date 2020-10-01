@@ -42,15 +42,14 @@ func responseBody(w *httptest.ResponseRecorder, i interface{}) {
 	json.Unmarshal(bodyBytes, i)
 }
 
-func TestAuthenticateRoute(t *testing.T) {
-
+func TestAuthenticateRouteAuthorized(t *testing.T) {
 	s := server.Server{Router: server.Router{}}
 
 	s.Init()
 
 	w := httptest.NewRecorder()
 
-	requestBody := server.AuthenticateRequest{UserName: "Yurhi", Password: "Bernards"}
+	requestBody := server.AuthenticateRequest{UserName: "edoraoff", Password: "14jkl;"}
 
 	req, _ := http.NewRequest("POST", "/api/auth", jsonBody(requestBody))
 
@@ -60,6 +59,29 @@ func TestAuthenticateRoute(t *testing.T) {
 
 	responseBody(w, &body)
 
-	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, len(body.Token), sha512.Size*2)
+}
+
+func TestAuthenticateRouteUnauthorized(t *testing.T) {
+	s := server.Server{Router: server.Router{}}
+
+	s.Init()
+
+	w := httptest.NewRecorder()
+
+	requestBody := server.AuthenticateRequest{UserName: "irar", Password: "14jkl;"}
+
+	req, _ := http.NewRequest("POST", "/api/auth", jsonBody(requestBody))
+
+	s.Server.ServeHTTP(w, req)
+
+	responseBody := w.Result().Body
+
+	defer responseBody.Close()
+
+	bodyBytes, _ := ioutil.ReadAll(responseBody)
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+	assert.Empty(t, bodyBytes)
 }

@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var fakeUsers = map[string]bool{
+	"edoraoff": true,
+	"irar":     false,
+}
+
 type Router struct {
 }
 
@@ -34,5 +39,10 @@ func (r Router) Authenticate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, AuthenticateResponse{Token: token.GenerateSha512(timestamp, reqBody.UserName)})
+	if v, _ := fakeUsers[reqBody.UserName]; !v {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+
+	c.JSON(http.StatusOK, AuthenticateResponse{Token: token.GenerateSha512(timestamp, reqBody.UserName)})
 }
