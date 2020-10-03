@@ -1,8 +1,11 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 	"time"
+
+	"github.com/YuhriBernardes/gauth-app/validation"
 
 	"github.com/YuhriBernardes/gauth-app/token"
 
@@ -30,6 +33,19 @@ type AuthenticateResponse struct {
 	Token string `json:"token"`
 }
 
+func (req *AuthenticateRequest) validate() (ok bool, err error) {
+	if !validation.RequiredString(req.UserName) {
+		return false, errors.New("Field userName is required")
+	}
+
+	if !validation.RequiredString(req.Password) {
+		return false, errors.New("Field password is required")
+	}
+
+	return true, nil
+
+}
+
 func (r Router) Authenticate(c *gin.Context) {
 	reqBody := &AuthenticateRequest{}
 	timestamp := time.Now().Unix()
@@ -39,7 +55,12 @@ func (r Router) Authenticate(c *gin.Context) {
 		return
 	}
 
-	if v, _ := fakeUsers[reqBody.UserName]; !v {
+	if _, err := reqBody.validate(); err != nil {
+		c.JSON(http.StatusBadRequest, RequestError{Message: err.Error()})
+		return
+	}
+
+	if v, ok := fakeUsers[reqBody.UserName]; !ok || !v {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
