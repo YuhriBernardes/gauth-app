@@ -6,14 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Server struct {
+type ServerRouter interface {
+	Authentication(c *gin.Context)
+}
+
+type GinServer struct {
 	Port   int
 	Host   string
-	Router Router
+	Router ServerRouter
 	Server *gin.Engine
 }
 
-func (s *Server) Init() {
+func (s *GinServer) Init() {
 	s.Server = gin.Default()
 	// Dilable CORS
 	s.Server.Use(func(c *gin.Context) {
@@ -32,10 +36,10 @@ func (s *Server) Init() {
 
 	routes := s.Server.Group("/api")
 	{
-		routes.POST("/auth", s.Router.Authenticate)
+		routes.POST("/tokens", s.Router.Authentication)
 	}
 }
 
-func (s *Server) Start() {
+func (s *GinServer) Start() {
 	s.Server.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
 }

@@ -1,13 +1,12 @@
 package server
 
 import (
-	"errors"
 	"net/http"
-	"time"
 
+	"github.com/YuhriBernardes/gauth-app/service"
 	"github.com/YuhriBernardes/gauth-app/validation"
 
-	"github.com/YuhriBernardes/gauth-app/token"
+	"github.com/YuhriBernardes/gauth-app/model"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,52 +17,26 @@ var fakeUsers = map[string]bool{
 }
 
 type Router struct {
-}
-
-type RequestError struct {
-	Message string `json:"errMsg"`
-}
-
-type AuthenticateRequest struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
+	Service service.Service
 }
 
 type AuthenticateResponse struct {
 	Token string `json:"token"`
 }
 
-func (req *AuthenticateRequest) validate() (ok bool, err error) {
-	if !validation.RequiredString(req.UserName) {
-		return false, errors.New("Field userName is required")
+func (r Router) Authentication(c *gin.Context) {
+	reqBody := model.Authentication{
+		Login:    c.PostForm("login"),
+		Password: c.PostForm("password"),
 	}
 
-	if !validation.RequiredString(req.Password) {
-		return false, errors.New("Field password is required")
-	}
-
-	return true, nil
-
-}
-
-func (r Router) Authenticate(c *gin.Context) {
-	reqBody := &AuthenticateRequest{}
-	timestamp := time.Now().Unix()
-
-	if err := c.ShouldBindJSON(reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, RequestError{Message: "Invalid json body"})
+	if err := validation.ValidateAuthentication(reqBody); err != nil {
+		c.JSON(400, model.RequestError{Message: err.Error()})
 		return
 	}
 
-	if _, err := reqBody.validate(); err != nil {
-		c.JSON(http.StatusBadRequest, RequestError{Message: err.Error()})
-		return
-	}
-
-	if v, ok := fakeUsers[reqBody.UserName]; !ok || !v {
+	if err := r.Service.Authenticate(reqBody); err != nil {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
-
-	c.JSON(http.StatusOK, AuthenticateResponse{Token: token.GenerateSha512(timestamp, reqBody.UserName)})
 }
