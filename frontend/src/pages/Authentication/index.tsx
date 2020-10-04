@@ -3,7 +3,10 @@ import AppBar from "@material-ui/core/AppBar"
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
+import { AxiosError } from "axios"
 import React, { useState } from "react"
+import authentication from "../../api/authentication"
+import { ApiError, ResponseStatus } from "../../api/base"
 import Form, { AuthForm } from "./Form"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,8 +34,19 @@ function Authenticate() {
   const initialFormState = { login: "", password: "" }
   const authFormState = useState<AuthForm>(initialFormState)
 
-  const onSubmit = (form: AuthForm): void => {
-    console.table(form)
+  const onSubmit = async ({ login, password }: AuthForm): Promise<any> => {
+    try {
+      const res = await authentication({ userName: login, password })
+      alert("Authenticated successfully")
+      console.table(res)
+    } catch (e) {
+      const { response } = e as AxiosError<ApiError>
+      if (response?.status == ResponseStatus.UNAUTHORIZED) {
+        alert("Authentication Failed")
+      } else if (response?.status == ResponseStatus.BAD_REQUEST) {
+        alert(response?.data.errMsg)
+      }
+    }
   }
 
   return (

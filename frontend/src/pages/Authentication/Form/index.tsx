@@ -25,7 +25,7 @@ type SetAuthFormHandler = React.Dispatch<React.SetStateAction<AuthForm>>
 export type AuthFormState = [AuthForm, SetAuthFormHandler]
 
 interface AuthFormProps {
-  onSubmit(form: AuthForm): void
+  onSubmit(form: AuthForm): any
   formState: AuthFormState
   resetOnSubmit: boolean
   initialState: AuthForm
