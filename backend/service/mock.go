@@ -1,8 +1,6 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/YuhriBernardes/gauth-app/model"
 )
 
@@ -11,16 +9,16 @@ type MockService struct {
 	Identities map[string]string
 }
 
-func (service *MockService) Authenticate(authentication model.Authentication) (err error) {
+func (service MockService) Authenticate(authentication model.Authentication) (err error) {
 
 	password, ok := service.Identities[authentication.Login]
 
 	if !ok {
-		return errors.New("User not found")
+		return model.ErrorUnauthorized
 	}
 
 	if password != authentication.Password {
-		return errors.New("Incorrect Password")
+		return model.ErrorUnauthorized
 	}
 
 	return nil

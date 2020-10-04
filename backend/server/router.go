@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/YuhriBernardes/gauth-app/service"
 	"github.com/YuhriBernardes/gauth-app/validation"
 
@@ -15,7 +17,7 @@ var fakeUsers = map[string]bool{
 }
 
 type Router struct {
-	service service.Service
+	Service service.Service
 }
 
 type RequestError struct {
@@ -26,7 +28,7 @@ type AuthenticateResponse struct {
 	Token string `json:"token"`
 }
 
-func (r Router) Authenticate(c *gin.Context) {
+func (r Router) Authentication(c *gin.Context) {
 	reqBody := model.Authentication{
 		Login:    c.PostForm("login"),
 		Password: c.PostForm("password"),
@@ -34,17 +36,11 @@ func (r Router) Authenticate(c *gin.Context) {
 
 	if err := validation.ValidateAuthentication(reqBody); err != nil {
 		c.JSON(400, RequestError{Message: err.Error()})
+		return
 	}
 
-	// if _, err := reqBody.validate(); err != nil {
-	// 	c.JSON(http.StatusBadRequest, RequestError{Message: err.Error()})
-	// 	return
-	// }
-
-	// if v, ok := fakeUsers[reqBody.UserName]; !ok || !v {
-	// 	c.Status(http.StatusUnauthorized)
-	// 	return
-	// }
-
-	// c.JSON(http.StatusOK, AuthenticateResponse{Token: token.GenerateSha512(timestamp, reqBody.UserName)})
+	if err := r.Service.Authenticate(reqBody); err != nil {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
 }
