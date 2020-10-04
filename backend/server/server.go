@@ -18,7 +18,7 @@ func (s *Server) Init() {
 
 	routes := s.Server.Group("/api")
 	{
-		routes.POST("/auth", s.Router.Authenticate)
+		routes.POST("/tokens", s.Router.Authentication)
 	}
 }
 
