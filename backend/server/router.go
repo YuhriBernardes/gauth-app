@@ -20,10 +20,6 @@ type Router struct {
 	Service service.Service
 }
 
-type RequestError struct {
-	Message string `json:"errMsg"`
-}
-
 type AuthenticateResponse struct {
 	Token string `json:"token"`
 }
@@ -35,7 +31,7 @@ func (r Router) Authentication(c *gin.Context) {
 	}
 
 	if err := validation.ValidateAuthentication(reqBody); err != nil {
-		c.JSON(400, RequestError{Message: err.Error()})
+		c.JSON(400, model.RequestError{Message: err.Error()})
 		return
 	}
 

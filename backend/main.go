@@ -19,7 +19,7 @@ func main() {
 		},
 	}
 
-	s := server.Server{Router: router, Port: 3001}
+	s := server.GinServer{Router: router, Port: 3001}
 
 	s.Init()
 	s.Start()
