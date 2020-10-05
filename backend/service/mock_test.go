@@ -10,7 +10,7 @@ import (
 	"github.com/YuhriBernardes/gauth-app/service"
 )
 
-func TestMockServiceAuthentication(t *testing.T) {
+func TestMockServiceAuthenticate(t *testing.T) {
 	svc := service.MockService{
 		Identities: map[string]string{"user1": "password1"},
 	}

@@ -9,6 +9,8 @@ type MockService struct {
 	Identities map[string]string
 }
 
+func (service MockService) Init() error { return nil }
+
 func (service MockService) Authenticate(authentication model.Authentication) (user *model.User, err error) {
 
 	password, ok := service.Identities[authentication.Login]
