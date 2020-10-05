@@ -9,17 +9,17 @@ type MockService struct {
 	Identities map[string]string
 }
 
-func (service MockService) Authenticate(authentication model.Authentication) (err error) {
+func (service MockService) Authenticate(authentication model.Authentication) (user *model.User, err error) {
 
 	password, ok := service.Identities[authentication.Login]
 
 	if !ok {
-		return model.ErrorUnauthorized
+		return user, model.ErrorUnauthorized
 	}
 
 	if password != authentication.Password {
-		return model.ErrorUnauthorized
+		return user, model.ErrorUnauthorized
 	}
 
-	return nil
+	return &model.User{Login: authentication.Login, Password: authentication.Password}, nil
 }
