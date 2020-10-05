@@ -3,5 +3,6 @@ package service
 import "github.com/YuhriBernardes/gauth-app/model"
 
 type Service interface {
-	Authenticate(model.Authentication) (err error)
+	Init() error
+	Authenticate(model.Authentication) (user *model.User, err error)
 }

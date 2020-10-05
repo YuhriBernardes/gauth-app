@@ -7,11 +7,11 @@ type MemoryDatabase struct {
 	Users map[string]model.User
 }
 
-func (mdb *MemoryDatabase) Init() error {
+func (mdb MemoryDatabase) Init() error {
 	return nil
 }
 
-func (mdb *MemoryDatabase) GetUserByAuthentication(authentication model.Authentication) (user *model.User, err error) {
+func (mdb MemoryDatabase) GetUserByAuthentication(authentication model.Authentication) (user *model.User, err error) {
 
 	for _, u := range mdb.Users {
 		if u.Login == authentication.Login && u.Password == authentication.Password {

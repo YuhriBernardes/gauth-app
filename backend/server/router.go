@@ -2,6 +2,9 @@ package server
 
 import (
 	"net/http"
+	"time"
+
+	"github.com/YuhriBernardes/gauth-app/token"
 
 	"github.com/YuhriBernardes/gauth-app/service"
 	"github.com/YuhriBernardes/gauth-app/validation"
@@ -35,8 +38,17 @@ func (r Router) Authentication(c *gin.Context) {
 		return
 	}
 
-	if err := r.Service.Authenticate(reqBody); err != nil {
+	user, err := r.Service.Authenticate(reqBody)
+
+	if err == model.ErrorUnauthorized {
 		c.Status(http.StatusUnauthorized)
 		return
+	} else if err != nil {
+		c.JSON(http.StatusInternalServerError, model.RequestError{Message: err.Error()})
 	}
+
+	userToken := token.GenerateSha512(time.Now().Unix(), user.Name, user.Email, user.Login, user.Password)
+
+	c.JSON(http.StatusOK, gin.H{"token": userToken})
+
 }
