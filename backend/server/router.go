@@ -23,8 +23,15 @@ type Router struct {
 	Service service.Service
 }
 
+type UserInfo struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Login string `json:"login"`
+}
+
 type AuthenticateResponse struct {
-	Token string `json:"token"`
+	UserInfo UserInfo `json:"user"`
+	Token    string   `json:"token"`
 }
 
 func (r Router) Authentication(c *gin.Context) {
@@ -49,6 +56,6 @@ func (r Router) Authentication(c *gin.Context) {
 
 	userToken := token.GenerateSha512(time.Now().Unix(), user.Name, user.Email, user.Login, user.Password)
 
-	c.JSON(http.StatusOK, gin.H{"token": userToken})
+	c.JSON(http.StatusOK, AuthenticateResponse{Token: userToken, UserInfo: UserInfo{Name: user.Name, Email: user.Email, Login: user.Login}})
 
 }
