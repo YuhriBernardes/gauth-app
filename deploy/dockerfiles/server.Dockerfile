@@ -4,8 +4,6 @@ WORKDIR /build
 
 COPY ./backend ./
 
-RUN ls -la
-
 RUN go mod download
 
 RUN go build ./main.go
