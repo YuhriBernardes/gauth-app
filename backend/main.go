@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/YuhriBernardes/gauth-app/common"
 	"github.com/YuhriBernardes/gauth-app/database"
 	"github.com/YuhriBernardes/gauth-app/model"
 	"github.com/YuhriBernardes/gauth-app/server"
@@ -34,7 +35,7 @@ func main() {
 		Service: svc,
 	}
 
-	s := server.GinServer{Router: router, Port: 3001}
+	s := server.GinServer{Router: router, Port: common.EnvIntOrDefault("SERVER_PORT", 3001)}
 
 	s.Init()
 	s.Start()

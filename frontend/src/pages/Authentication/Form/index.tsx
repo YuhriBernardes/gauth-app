@@ -53,7 +53,9 @@ const Form: React.FC<AuthFormProps> = ({
   return (
     <>
       <Paper elevation={1} className={classes.formCard}>
-        <Typography variant="h5">Login</Typography>
+        <Typography variant="h5">
+          Login {" " + process.env.REACT_APP_SOMETHING}
+        </Typography>
         <form
           onSubmit={(e: FormEvent<HTMLFormElement>) => {
             e.preventDefault()

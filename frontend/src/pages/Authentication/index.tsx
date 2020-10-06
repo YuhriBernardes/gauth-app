@@ -36,14 +36,14 @@ function Authenticate() {
 
   const onSubmit = async ({ login, password }: AuthForm): Promise<any> => {
     try {
-      const res = await authentication({ userName: login, password })
+      const res = await authentication({ login, password })
       alert("Authenticated successfully")
       console.table(res)
     } catch (e) {
       const { response } = e as AxiosError<ApiError>
-      if (response?.status == ResponseStatus.UNAUTHORIZED) {
+      if (response?.status === ResponseStatus.UNAUTHORIZED) {
         alert("Authentication Failed")
-      } else if (response?.status == ResponseStatus.BAD_REQUEST) {
+      } else if (response?.status === ResponseStatus.BAD_REQUEST) {
         alert(response?.data.errMsg)
       }
     }

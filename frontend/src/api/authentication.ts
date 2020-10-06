@@ -1,7 +1,7 @@
-import api, { ApiError, ApiResponse } from "./base"
+import api, { ApiResponse } from "./base"
 
 interface AuthenticationRequest {
-  userName: string
+  login: string
   password: string
 }
 
@@ -12,7 +12,11 @@ interface AuthenticationResponse {
 export default async function (
   request: AuthenticationRequest
 ): Promise<ApiResponse<AuthenticationResponse>> {
-  const response = await api.post<AuthenticationResponse>("/auth", request)
+  const response = await api.post<AuthenticationResponse>("/tokens", request, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  })
 
   const { data, status, headers } = response
   return { data, status, headers }

@@ -10,6 +10,8 @@
 **/*.backup.*
 **/*.back.*
 
+**/build
+
 **/node_modules
 **/bower_components
 
@@ -37,4 +39,3 @@
 .env
 
 # End of https://www.toptal.com/developers/gitignore/api/dotenv
-

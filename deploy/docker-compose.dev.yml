@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: ../
+      dockerfile: ./deploy/dockerfiles/server.Dockerfile
+    image: gauth-server:local
+    environment:
+      - "SERVER_PORT=${SERVER_PORT:-80}"
+    container_name: gauth-server
+    ports:
+      - "3001:${SERVER_PORT:-80}"
+
+  web:
+    depends_on:
+      - server
+    build:
+      context: ../
+      dockerfile: ./deploy/dockerfiles/web.Dockerfile
+    image: gauth-web:local
+    links:
+      - "server:gauthserver"
+    container_name: gauth-web
+    environment:
+      - "SERVER_PORT=${SERVER_PORT:-3001}"
+      - "SERVER_HOST=${SERVER_HOST:-localhost}"
+    ports:
+      - 3000:80
