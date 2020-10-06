@@ -5,8 +5,15 @@ interface AuthenticationRequest {
   password: string
 }
 
+interface UserInfo {
+  name: string
+  email: string
+  login: string
+}
+
 interface AuthenticationResponse {
   token: string
+  userI: UserInfo
 }
 
 export default async function (
